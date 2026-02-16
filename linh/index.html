@@ -24,9 +24,29 @@
         /* Lời chúc */
         #wish-container { display: none; }
         .wish-text {
-            font-family: 'Dancing Script', cursive; font-size: 5.5rem; color: #ffd700;
-            text-shadow: 0 0 30px #ff0000, 0 0 10px #fff;
-            opacity: 0; transform: translateY(30px); transition: all 1.2s ease-in-out;
+            /* Sử dụng font Montserrat cho dễ đọc câu dài, hoặc Dancing Script nếu muốn nghệ thuật */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem; /* Giảm xuống để vừa các câu dài */
+            line-height: 1.4;  /* Khoảng cách giữa các dòng */
+            color: #ffd700;
+            text-shadow: 0 0 20px #ff0000, 0 0 10px #fff;
+
+            /* Quan trọng để chữ không tràn màn hình */
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            word-wrap: break-word;
+
+            /* Hiệu ứng hiển thị */
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .wish-text {
+                font-size: 1.8rem;
+                max-width: 90%;
+            }
         }
         .wish-text.active { opacity: 1; transform: translateY(0); }
 
@@ -164,7 +184,7 @@
     function loop() {
         requestAnimationFrame(loop);
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'lighter';
 
