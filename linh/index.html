@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Giao Thừa Bính Ngọ 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        body { margin: 0; padding: 0; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; color: #fff; touch-action: manipulation; }
+        :root {
+            --gold: #ffd700;
+            --red: #ff0000;
+            --dark-red: #8b0000;
+        }
+
+        body {
+            margin: 0; padding: 0; background: #000; overflow: hidden;
+            font-family: 'Montserrat', sans-serif; color: #fff;
+            touch-action: manipulation;
+        }
+
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
         #content-wrapper {
@@ -17,83 +28,135 @@
             text-align: center; pointer-events: none; padding: 0 10px;
         }
 
-        /* Countdown */
-        .countdown-ui h1 { font-size: 2.2rem; color: #ffd700; text-shadow: 0 0 15px #ff4500; margin-bottom: 1.5rem; text-transform: uppercase; }
-        #timer { display: flex; gap: 10px; justify-content: center; }
-        .time-box {
-            background: rgba(255, 0, 0, 0.25);
-            backdrop-filter: blur(8px);
-            padding: 15px 10px;
-            border-radius: 12px;
-            min-width: 75px;
-            border: 1.5px solid #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        /* --- CẢI TIẾN GIAO DIỆN ĐẾM NGƯỢC --- */
+        .countdown-ui {
+            animation: floating 3s ease-in-out infinite;
         }
-        .time-box span { display: block; font-size: 2.2rem; font-weight: 800; line-height: 1; }
-        .time-box small { font-size: 0.7rem; color: #ffd700; }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .countdown-ui h1 {
+            font-size: 2.2rem;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.4);
+            margin-bottom: 2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        #timer { display: flex; gap: 15px; justify-content: center; }
+
+        .time-box {
+            background: linear-gradient(145deg, rgba(139, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+            backdrop-filter: blur(15px);
+            padding: 20px 15px;
+            border-radius: 20px;
+            min-width: 85px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        /* Hiệu ứng viền sáng chạy quanh box */
+        .time-box::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, var(--gold));
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 25px var(--gold), 0 0 40px var(--red); }
+        }
+
+        .time-box small {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 400;
+            margin-top: 8px;
+            display: block;
+            letter-spacing: 1px;
+        }
+
+        /* 3-2-1 Animation */
+        #final-countdown {
+            display: none;
+            font-size: 18rem;
+            color: var(--gold);
+            text-shadow: 0 0 50px var(--red), 0 0 100px var(--gold);
+            z-index: 20;
+        }
 
         /* Lời chúc */
-        #wish-container { display: none; width: 100%; }
+        #wish-container { display: none; width: 100%; z-index: 30;}
         .wish-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.4rem;
-            line-height: 1.5;
-            color: #ffd700;
-            text-shadow: 0 0 20px #ff0000, 0 0 10px #fff;
-            max-width: 750px;
+            font-size: 2.6rem;
+            line-height: 1.6;
+            color: var(--gold);
+            text-shadow: 0 0 25px var(--red), 0 0 10px #fff;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 15px;
-            word-wrap: break-word;
+            padding: 0 20px;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 1s ease-in-out;
+            transform: scale(0.9);
+            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .wish-text.active { opacity: 1; transform: translateY(0); }
+        .wish-text.active { opacity: 1; transform: scale(1); }
 
-        /* QR CODE - Mặc định ở dưới bên phải (Desktop) */
-        #qr-wrapper {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-            pointer-events: auto;
-            transition: all 0.3s ease;
-        }
-        #qrcode img { width: 70px !important; height: 70px !important; }
-        #qr-wrapper span { color: #000; font-size: 8px; font-weight: 900; margin-top: 4px; }
-
-        /* Nút Preview */
+        /* Nút Preview Custom */
         #btnPreview {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 100; padding: 12px 25px;
-            background: linear-gradient(45deg, #ff0000, #ffd700); border: none;
-            border-radius: 50px; color: #000; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px #ff4500; font-size: 14px;
-            white-space: nowrap; pointer-events: auto;
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 100; padding: 15px 40px;
+            background: linear-gradient(45deg, var(--dark-red), var(--red));
+            border: 2px solid var(--gold);
+            border-radius: 50px; color: var(--gold); font-weight: 800; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.5); font-size: 14px;
+            letter-spacing: 2px; transition: 0.3s; pointer-events: auto;
         }
+        #btnPreview:hover { transform: translateX(-50%) scale(1.05); background: var(--red); color: #fff; }
 
-        /* Responsive cho Mobile */
+        /* QR CODE */
+        #qr-wrapper {
+            position: fixed; bottom: 25px; right: 25px; z-index: 100;
+            background: rgba(255, 255, 255, 0.95); padding: 10px; border-radius: 15px;
+            display: flex; flex-direction: column; align-items: center; pointer-events: auto;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        #qrcode img { width: 80px !important; height: 80px !important; }
+        #qr-wrapper span { color: #000; font-size: 9px; font-weight: 900; margin-top: 5px; }
+
         @media (max-width: 600px) {
-            /* QR chuyển lên góc TRÊN PHẢI để không đè nút */
-            #qr-wrapper {
-                bottom: auto;
-                top: 15px;
-                right: 15px;
-                padding: 6px;
-                transform: scale(0.85);
-            }
-            .countdown-ui h1 { font-size: 1.4rem; margin-bottom: 1rem; }
-            .time-box { min-width: 65px; padding: 10px 5px; }
-            .time-box span { font-size: 1.6rem; }
-            .wish-text { font-size: 1.5rem; line-height: 1.4; }
-            #btnPreview { bottom: 20px; padding: 10px 20px; font-size: 12px; }
+            #qr-wrapper { bottom: auto; top: 20px; right: 20px; transform: scale(0.8); }
+            .countdown-ui h1 { font-size: 1.5rem; letter-spacing: 2px; }
+            #timer { gap: 8px; }
+            .time-box { min-width: 65px; padding: 15px 5px; border-radius: 15px; }
+            .time-box span { font-size: 1.8rem; }
+            #final-countdown { font-size: 10rem; }
+            .wish-text { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -112,43 +175,56 @@
         </div>
     </div>
 
+    <div id="final-countdown">3</div>
+
     <div id="wish-container">
-        <h2 id="wish-display" class="wish-text">CHÚC MỪNG NĂM MỚI</h2>
+        <h2 id="wish-display" class="wish-text"></h2>
     </div>
 </div>
 
-<button id="btnPreview" onclick="triggerGiaoThua()">BẮN PHÁO HOA GIAO THỪA</button>
+<button id="btnPreview" onclick="startSequence()">BẮN PHÁO HOA GIAO THỪA</button>
 
 <div id="qr-wrapper">
     <div id="qrcode"></div>
-    <span>QUÉT ĐỂ XEM</span>
+    <span>QUÉT ĐỂ CHIA SẺ</span>
 </div>
 
 <script>
     // 1. QR CODE
     new QRCode(document.getElementById("qrcode"), {
         text: window.location.href,
-        width: 70,
-        height: 70,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
+        width: 80, height: 80
     });
 
-    // 2. PHÁO HOA
+    // 2. HỆ THỐNG PHÁO HOA & BỤI VÀNG
     const canvas = document.getElementById('fireworksCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
-    let fireworks = [];
-    let particles = [];
-    let isGiaoThua = false;
+    let fireworks = [], particles = [], goldDust = [], isGiaoThua = false, isCountingDown = false;
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    // Tạo bụi vàng rơi nhẹ nền
+    class Dust {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2;
+            this.speed = Math.random() * 0.5 + 0.2;
+            this.opacity = Math.random();
+        }
+        draw() {
+            ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        update() {
+            this.y += this.speed;
+            if (this.y > canvas.height) this.y = -10;
+        }
+    }
+
+    for(let i=0; i<50; i++) goldDust.push(new Dust());
 
     class Firework {
         constructor(targetX, targetY) {
@@ -157,48 +233,37 @@
             this.targetX = targetX || Math.random() * canvas.width;
             this.targetY = targetY || Math.random() * (canvas.height * 0.5);
             this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
-            this.speed = 2.5;
-            this.acceleration = 1.05;
+            this.speed = 3; this.acceleration = 1.05;
             this.brightness = Math.random() * 50 + 50;
-            this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y]];
         }
         update(index) {
-            this.coordinates.pop();
-            this.coordinates.unshift([this.x, this.y]);
             this.speed *= this.acceleration;
+            let vx = Math.cos(this.angle) * this.speed;
+            let vy = Math.sin(this.angle) * this.speed;
             if(this.y <= this.targetY || this.speed > 50) {
                 createParticles(this.targetX, this.targetY);
                 fireworks.splice(index, 1);
             } else {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
+                this.x += vx; this.y += vy;
             }
         }
         draw() {
             ctx.beginPath();
-            ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-            ctx.lineTo(this.x, this.y);
-            ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, ${this.brightness}%)`;
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, ${this.brightness}%)`;
+            ctx.fill();
         }
     }
 
     class Particle {
         constructor(x, y, hue) {
-            this.x = x; this.y = y;
-            this.hue = hue;
+            this.x = x; this.y = y; this.hue = hue;
             this.angle = Math.random() * Math.PI * 2;
-            this.speed = Math.random() * 8 + 1;
-            this.friction = 0.95;
-            this.gravity = 0.8;
-            this.alpha = 1;
-            this.decay = Math.random() * 0.02 + 0.01;
-            this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y], [this.x, this.y]];
+            this.speed = Math.random() * 12 + 1;
+            this.friction = 0.95; this.gravity = 0.7;
+            this.alpha = 1; this.decay = Math.random() * 0.02 + 0.01;
         }
         update(index) {
-            this.coordinates.pop();
-            this.coordinates.unshift([this.x, this.y]);
             this.speed *= this.friction;
             this.x += Math.cos(this.angle) * this.speed;
             this.y += Math.sin(this.angle) * this.speed + this.gravity;
@@ -206,20 +271,19 @@
             if(this.alpha <= this.decay) particles.splice(index, 1);
         }
         draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
             ctx.beginPath();
-            ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-            ctx.lineTo(this.x, this.y);
-            ctx.strokeStyle = `hsla(${this.hue}, 100%, 50%, ${this.alpha})`;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
         }
     }
 
     function createParticles(x, y) {
-        let particleCount = 80;
-        if (window.innerWidth < 600) particleCount = 50; // Giảm hạt trên mobile để mượt hơn
-        let hue = Math.random() * 360;
-        while(particleCount--) particles.push(new Particle(x, y, hue));
+        let pc = 120; let hue = Math.random() * 360;
+        while(pc--) particles.push(new Particle(x, y, hue));
     }
 
     function loop() {
@@ -228,15 +292,16 @@
         ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'lighter';
-        let i = fireworks.length;
-        while(i--) { fireworks[i].draw(); fireworks[i].update(i); }
-        let j = particles.length;
-        while(j--) { particles[j].draw(); particles[j].update(j); }
-        let launchRate = isGiaoThua ? 0.12 : 0.03;
-        if(Math.random() < launchRate) fireworks.push(new Firework());
+
+        if(!isGiaoThua) goldDust.forEach(d => { d.draw(); d.update(); });
+
+        fireworks.forEach((f, i) => { f.draw(); f.update(i); });
+        particles.forEach((p, i) => { p.draw(); p.update(i); });
+
+        if(isGiaoThua && Math.random() < 0.2) fireworks.push(new Firework());
     }
 
-    // 3. LOGIC GIAO THỪA
+    // 3. LOGIC XỬ LÝ
     const wishes = [
         "HAPPY NEW YEAR 2026! 🥂",
         "Chúc Linh và gia đình một năm mới bình an, sức khỏe và thật nhiều niềm vui 🏠",
@@ -245,48 +310,63 @@
     ];
     let wishIndex = 0;
 
-    function triggerGiaoThua() {
-        if(isGiaoThua) return;
-        isGiaoThua = true;
+    function startSequence() {
+        if(isCountingDown || isGiaoThua) return;
+        isCountingDown = true;
         document.getElementById("countdown-ui").style.display = "none";
         document.getElementById("btnPreview").style.display = "none";
+
+        const finalUI = document.getElementById("final-countdown");
+        finalUI.style.display = "block";
+
+        let count = 3;
+        const finalTimer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                finalUI.innerText = count;
+                // Hiệu ứng zoom nhẹ cho số
+                finalUI.animate([{transform: 'scale(1.5)'}, {transform: 'scale(1)'}], {duration: 500});
+            } else {
+                clearInterval(finalTimer);
+                finalUI.style.display = "none";
+                triggerGiaoThua();
+            }
+        }, 1000);
+    }
+
+    function triggerGiaoThua() {
+        isGiaoThua = true;
         document.getElementById("wish-container").style.display = "block";
+        const display = document.getElementById("wish-display");
 
         const updateWish = () => {
-            const display = document.getElementById("wish-display");
             display.classList.remove("active");
             setTimeout(() => {
                 display.innerText = wishes[wishIndex];
                 display.classList.add("active");
                 wishIndex = (wishIndex + 1) % wishes.length;
-            }, 600);
+            }, 800);
         };
         updateWish();
-        setInterval(updateWish, 6000);
-        for(let i=0; i<8; i++) setTimeout(() => fireworks.push(new Firework()), i*300);
+        setInterval(updateWish, 6500);
+        for(let i=0; i<20; i++) setTimeout(() => fireworks.push(new Firework()), i*150);
     }
 
-    // Đếm ngược
+    // Timer đếm ngược thực
     const target = new Date("February 17, 2026 00:00:00").getTime();
     setInterval(() => {
         const diff = target - new Date().getTime();
-        if(diff <= 0 && !isGiaoThua) { triggerGiaoThua(); return; }
-        document.getElementById("days").innerText = Math.floor(diff / (1000*60*60*24));
-        document.getElementById("hours").innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2, '0');
-        document.getElementById("mins").innerText = String(Math.floor((diff % (1000*60*60))/(1000*60))).padStart(2, '0');
-        document.getElementById("secs").innerText = String(Math.floor((diff % (1000*60))/1000)).padStart(2, '0');
+        if(diff <= 0 && !isCountingDown && !isGiaoThua) { startSequence(); }
+        else if (diff > 0) {
+            document.getElementById("days").innerText = Math.floor(diff / (1000*60*60*24));
+            document.getElementById("hours").innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2, '0');
+            document.getElementById("mins").innerText = String(Math.floor((diff % (1000*60*60))/(1000*60))).padStart(2, '0');
+            document.getElementById("secs").innerText = String(Math.floor((diff % (1000*60))/1000)).padStart(2, '0');
+        }
     }, 1000);
 
-    // Click/Touch để bắn
-    const handleAction = (e) => {
-        let x = e.clientX || (e.touches && e.touches[0].clientX);
-        let y = e.clientY || (e.touches && e.touches[0].clientY);
-        if (x && y) fireworks.push(new Firework(x, y));
-    };
-    window.addEventListener('mousedown', handleAction);
-    window.addEventListener('touchstart', (e) => {
-        if (e.target.id !== 'btnPreview') handleAction(e);
-    });
+    window.addEventListener('mousedown', (e) => { if(isGiaoThua) fireworks.push(new Firework(e.clientX, e.clientY)); });
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
     loop();
 </script>
