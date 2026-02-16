@@ -2,80 +2,99 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao Thừa Rực Rỡ 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Giao Thừa Bính Ngọ 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
-    <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        body { margin: 0; padding: 0; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; color: #fff; }
+        body { margin: 0; padding: 0; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; color: #fff; touch-action: manipulation; }
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
         #content-wrapper {
             position: relative; z-index: 10; height: 100vh;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; pointer-events: none;
+            text-align: center; pointer-events: none; padding: 0 10px;
         }
 
         /* Countdown */
-        .countdown-ui h1 { font-size: 2.5rem; color: #ffd700; text-shadow: 0 0 20px #ff4500; margin-bottom: 2rem; }
-        #timer { display: flex; gap: 15px; }
-        .time-box { background: rgba(255, 0, 0, 0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; min-width: 90px; border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-        .time-box span { display: block; font-size: 3rem; font-weight: 800; }
+        .countdown-ui h1 { font-size: 2.2rem; color: #ffd700; text-shadow: 0 0 15px #ff4500; margin-bottom: 1.5rem; text-transform: uppercase; }
+        #timer { display: flex; gap: 10px; justify-content: center; }
+        .time-box {
+            background: rgba(255, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            padding: 15px 10px;
+            border-radius: 12px;
+            min-width: 75px;
+            border: 1.5px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        .time-box span { display: block; font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .time-box small { font-size: 0.7rem; color: #ffd700; }
 
         /* Lời chúc */
-        #wish-container { display: none; }
+        #wish-container { display: none; width: 100%; }
         .wish-text {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             line-height: 1.5;
             color: #ffd700;
             text-shadow: 0 0 20px #ff0000, 0 0 10px #fff;
-            max-width: 850px;
+            max-width: 750px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
             word-wrap: break-word;
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 1.2s ease-in-out;
-        }
-        @media (max-width: 768px) {
-            .wish-text { font-size: 1.6rem; max-width: 90%; }
-            .countdown-ui h1 { font-size: 1.8rem; }
-            .time-box { min-width: 60px; padding: 10px; }
-            .time-box span { font-size: 1.8rem; }
+            transform: translateY(20px);
+            transition: all 1s ease-in-out;
         }
         .wish-text.active { opacity: 1; transform: translateY(0); }
 
-        /* Nút Preview */
-        #btnPreview {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 100; padding: 15px 35px;
-            background: linear-gradient(45deg, #ff0000, #ffd700); border: none;
-            border-radius: 50px; color: #000; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px #ff4500;
-        }
-
-        /* QR CODE ở góc phải */
+        /* QR CODE - Mặc định ở dưới bên phải (Desktop) */
         #qr-wrapper {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 10px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            transition: transform 0.3s ease;
-            pointer-events: auto; /* Cho phép tương tác */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            pointer-events: auto;
+            transition: all 0.3s ease;
         }
-        #qr-wrapper:hover { transform: scale(1.1); }
-        #qrcode { margin-bottom: 5px; }
-        #qr-wrapper span { color: #000; font-size: 10px; font-weight: 900; }
+        #qrcode img { width: 70px !important; height: 70px !important; }
+        #qr-wrapper span { color: #000; font-size: 8px; font-weight: 900; margin-top: 4px; }
+
+        /* Nút Preview */
+        #btnPreview {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 100; padding: 12px 25px;
+            background: linear-gradient(45deg, #ff0000, #ffd700); border: none;
+            border-radius: 50px; color: #000; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 20px #ff4500; font-size: 14px;
+            white-space: nowrap; pointer-events: auto;
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 600px) {
+            /* QR chuyển lên góc TRÊN PHẢI để không đè nút */
+            #qr-wrapper {
+                bottom: auto;
+                top: 15px;
+                right: 15px;
+                padding: 6px;
+                transform: scale(0.85);
+            }
+            .countdown-ui h1 { font-size: 1.4rem; margin-bottom: 1rem; }
+            .time-box { min-width: 65px; padding: 10px 5px; }
+            .time-box span { font-size: 1.6rem; }
+            .wish-text { font-size: 1.5rem; line-height: 1.4; }
+            #btnPreview { bottom: 20px; padding: 10px 20px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -84,7 +103,7 @@
 
 <div id="content-wrapper">
     <div id="countdown-ui" class="countdown-ui">
-        <h1>TẾT BÍNH NGỌ 2026 SAU</h1>
+        <h1>TẾT BÍNH NGỌ 2026</h1>
         <div id="timer">
             <div class="time-box"><span id="days">00</span><small>NGÀY</small></div>
             <div class="time-box"><span id="hours">00</span><small>GIỜ</small></div>
@@ -106,17 +125,17 @@
 </div>
 
 <script>
-    // 1. KHỞI TẠO QR CODE
+    // 1. QR CODE
     new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href, // Tự động lấy link trang này
-        width: 85,
-        height: 85,
+        text: window.location.href,
+        width: 70,
+        height: 70,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
 
-    // 2. LOGIC PHÁO HOA
+    // 2. PHÁO HOA
     const canvas = document.getElementById('fireworksCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -126,6 +145,11 @@
     let particles = [];
     let isGiaoThua = false;
 
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
     class Firework {
         constructor(targetX, targetY) {
             this.x = Math.random() * canvas.width;
@@ -133,7 +157,7 @@
             this.targetX = targetX || Math.random() * canvas.width;
             this.targetY = targetY || Math.random() * (canvas.height * 0.5);
             this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
-            this.speed = 2;
+            this.speed = 2.5;
             this.acceleration = 1.05;
             this.brightness = Math.random() * 50 + 50;
             this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y]];
@@ -142,7 +166,7 @@
             this.coordinates.pop();
             this.coordinates.unshift([this.x, this.y]);
             this.speed *= this.acceleration;
-            if(this.y <= this.targetY) {
+            if(this.y <= this.targetY || this.speed > 50) {
                 createParticles(this.targetX, this.targetY);
                 fireworks.splice(index, 1);
             } else {
@@ -155,6 +179,7 @@
             ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
             ctx.lineTo(this.x, this.y);
             ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, ${this.brightness}%)`;
+            ctx.lineWidth = 2;
             ctx.stroke();
         }
     }
@@ -164,12 +189,12 @@
             this.x = x; this.y = y;
             this.hue = hue;
             this.angle = Math.random() * Math.PI * 2;
-            this.speed = Math.random() * 10 + 1;
+            this.speed = Math.random() * 8 + 1;
             this.friction = 0.95;
-            this.gravity = 1;
+            this.gravity = 0.8;
             this.alpha = 1;
-            this.decay = Math.random() * 0.03 + 0.015;
-            this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y], [this.x, this.y], [this.x, this.y]];
+            this.decay = Math.random() * 0.02 + 0.01;
+            this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y], [this.x, this.y]];
         }
         update(index) {
             this.coordinates.pop();
@@ -185,12 +210,14 @@
             ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
             ctx.lineTo(this.x, this.y);
             ctx.strokeStyle = `hsla(${this.hue}, 100%, 50%, ${this.alpha})`;
+            ctx.lineWidth = 1.5;
             ctx.stroke();
         }
     }
 
     function createParticles(x, y) {
-        let particleCount = 150;
+        let particleCount = 80;
+        if (window.innerWidth < 600) particleCount = 50; // Giảm hạt trên mobile để mượt hơn
         let hue = Math.random() * 360;
         while(particleCount--) particles.push(new Particle(x, y, hue));
     }
@@ -198,18 +225,18 @@
     function loop() {
         requestAnimationFrame(loop);
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'lighter';
         let i = fireworks.length;
         while(i--) { fireworks[i].draw(); fireworks[i].update(i); }
         let j = particles.length;
         while(j--) { particles[j].draw(); particles[j].update(j); }
-        let launchRate = isGiaoThua ? 0.15 : 0.03;
+        let launchRate = isGiaoThua ? 0.12 : 0.03;
         if(Math.random() < launchRate) fireworks.push(new Firework());
     }
 
-    // 3. LOGIC GIAO THỪA & LỜI CHÚC
+    // 3. LOGIC GIAO THỪA
     const wishes = [
         "CHÚC MỪNG NĂM MỚI LINH VÀ GIA ĐÌNH NHÉ!",
         "CHÚC CẢ NHÀ MÌNH MỘT NĂM MỚI THẬT NHIỀU SỨC KHỎE, BÌNH AN VÀ MỌI DỰ ĐỊNH ĐỀU HANH THÔNG.",
@@ -234,10 +261,9 @@
                 wishIndex = (wishIndex + 1) % wishes.length;
             }, 600);
         };
-
         updateWish();
-        setInterval(updateWish, 6000); // 6 giây đổi câu một lần
-        for(let i=0; i<10; i++) setTimeout(() => fireworks.push(new Firework()), i*200);
+        setInterval(updateWish, 6000);
+        for(let i=0; i<8; i++) setTimeout(() => fireworks.push(new Firework()), i*300);
     }
 
     // Đếm ngược
@@ -245,13 +271,23 @@
     setInterval(() => {
         const diff = target - new Date().getTime();
         if(diff <= 0 && !isGiaoThua) { triggerGiaoThua(); return; }
-        document.getElementById("days").innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-        document.getElementById("secs").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-        document.getElementById("mins").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-        document.getElementById("hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+        document.getElementById("days").innerText = Math.floor(diff / (1000*60*60*24));
+        document.getElementById("hours").innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2, '0');
+        document.getElementById("mins").innerText = String(Math.floor((diff % (1000*60*60))/(1000*60))).padStart(2, '0');
+        document.getElementById("secs").innerText = String(Math.floor((diff % (1000*60))/1000)).padStart(2, '0');
     }, 1000);
 
-    window.addEventListener('mousedown', (e) => fireworks.push(new Firework(e.clientX, e.clientY)));
+    // Click/Touch để bắn
+    const handleAction = (e) => {
+        let x = e.clientX || (e.touches && e.touches[0].clientX);
+        let y = e.clientY || (e.touches && e.touches[0].clientY);
+        if (x && y) fireworks.push(new Firework(x, y));
+    };
+    window.addEventListener('mousedown', handleAction);
+    window.addEventListener('touchstart', (e) => {
+        if (e.target.id !== 'btnPreview') handleAction(e);
+    });
+
     loop();
 </script>
 </body>
